@@ -1,87 +1,95 @@
-/* array y sus metodos
- */
-/* const arrayVacio = [];
-console.log(arrayVacio); */
-/* 
-const numeros = [1, 2, 3, 4, 5];
-console.log(numeros);
- */
-/* const palabras = [`Hola`, "Mundo", `javascript`];
+const iva = 0.21;
+let productos = [];
+let contadorProductos = 0;
 
-const booleanos = [true, false, true, false];
-console.log(booleanos);
+alert("Bienvenido al gestor de inventario");
 
-const mixto = [1, "Hola", true, null, undefined, { nombre: "Juan", edad: 30 }, [1, 2, 3]];
-console.log(mixto);
-
-const numeros = [1, 2, 3, 4, 5];
-for (let i = 0; i < numeros.length; i++) {
-    console.log(numeros[i]);
+function mostrarOpciones() {
+  return prompt("Elije una opción:\n1- Agregar producto\n2- Ver listado de productos\n3- Salir");
 }
 
-console.log(numeros[0]); // Primer elemento
+function agregarProducto() {
+  const nombre = prompt("Ingresa el nombre del producto");
+  if (!nombre || nombre.trim() === "" || !isNaN(nombre)) {
+    alert("Nombre inválido.");
+    console.log("Nombre inválido.");
+    return;
+  }
 
-palabras.push(`es`, `genial`);
-console.log(palabras);
+  const precioEntrada = prompt("Ingresa el precio de lista (sin IVA).");
+  const precioLista = parseFloat(precioEntrada);
+  if (!Number.isFinite(precioLista) || precioLista < 0) {
+    alert("Precio inválido.");
+    console.log("Precio inválido.");
+    return;
+  }
 
-let ultimoElemento = palabras.pop();
-console.log(ultimoElemento);  /* se usa para eliminar el ultimo elemento de un array */
-/* console.log(palabras); */
+  const cantidadEntrada = prompt("Ingresa la cantidad");
+  const cantidad = parseInt(cantidadEntrada, 10);
+  if (!Number.isFinite(cantidad) || cantidad < 0) {
+    alert("Cantidad inválida.");
+    console.log("Cantidad inválida.");
+    return;
+  }
 
-/* let primerElemento = palabras.shift(); */ /* se usa para eliminar el primer elemento de un array */
-/* console.log(primerElemento); */
-/* console.log(palabras); */
+  contadorProductos++;
+  const producto = {
+    id: contadorProductos,
+    nombre: nombre.trim(),
+    precioLista: precioLista,
+    cantidad: cantidad
+  };
+  productos.push(producto);
 
-/* palabras.unshift(`Hola`);  *//* se usa para agregar un elemento al inicio de un array */
-/* console.log(palabras);  */ 
-
-/* let posicion = palabras.indexOf("Mundo"); */ /* se usa para buscar la posicion de un elemento en un array */
-/* console.log(posicion); */
-/* 
-let contiene = palabras.includes("javascript"); */ /* se usa para saber si un elemento existe en un array */
-/* console.log(contiene); */
-
-
-
-/* objetos y sus metodos */
-
-/* const objetoVacio = {}; */
-
-const persona = {
-    nombre: "Juan",
-    edad: 30,
-    esEstudiante: true,
-    hobbies: ['leer', 'viaje', 'programar']
+  alert("Producto agregado exitosamente.");
+  console.log("Producto agregado exitosamente:", producto);
 }
 
-const persona2 = {
-    nombre: "maria",
-    edad: 25,
-    esEstudiante: true,
-    hobbies: ['leer', 'viaje', 'programar']
+function mostrarProductos() {
+  if (productos.length === 0) {
+    alert("No hay productos en el inventario.");
+    console.log("No hay productos en el inventario.");
+    return;
+  }
+
+  let total = 0;
+  let listado = "Listado de productos:\n";
+  for (let i = 0; i < productos.length; i++) {
+    const p = productos[i];
+    const precioConIva = p.precioLista * (1 + iva);
+    const subtotal = precioConIva * p.cantidad;
+    total += subtotal;
+
+    listado += `${p.id}. ${p.nombre}\n` + `Precio de lista: $${p.precioLista.toFixed(2)}\n` +
+               `Precio con IVA: $${precioConIva.toFixed(2)}\n` + `Cantidad: ${p.cantidad}\n ` +
+               `Subtotal: $${subtotal.toFixed(2)}\n\n`;
+  }
+  listado += `Total (con IVA): $${total.toFixed(2)}`;
+  alert(listado);
+  console.log(listado);
 }
-console.log(persona);
 
-console.log(persona.esEstudiante); /* acceder a una propiedad del objeto */
-console.log(persona.hobbies[1]); /* acceder a un elemento de un array dentro de un objeto */
+function main() {
+  let opcion = mostrarOpciones();
 
-const usuario = [];
-usuario.push(persona);
-usuario.push(persona2)
+  while (opcion !== null && opcion !== "3") {
+    switch (opcion) {
+      case "1":
+        agregarProducto();
+        break;
+      case "2":
+        mostrarProductos();
+        break;
+      default:
+        alert("Opción inválida. Por favor, elige 1, 2 o 3.");
+        console.log("Opción inválida. Por favor, elige 1, 2 o 3.");
+    }
+    // volver a preguntar dentro del while
+    opcion = mostrarOpciones();
+  }
 
-console.log(usuario);
+  alert("Gracias por usar el gestor de inventario. ¡Hasta luego!");
+  console.log("Gracias por usar el gestor de inventario. ¡Hasta luego!");
+}
 
-usuario.sort((a, b) => a.edad - b.edad); /* ordenar un array de objetos por una propiedad */
-console.log(usuario);
-
-const mayorEdad = usuario.filter((user) => user.edad > 25); /* filtrar un array de objetos por una propiedad */
-console.log(mayorEdad);
-
-const juan = usuario.find((user) => user.nombre === "Juan"); /* buscar un objeto en un array por una propiedad */
-console.log(juan);
-
-const nombres = usuario.map((user) => user.nombre); /* crear un nuevo array con una propiedad de los objetos */
-console.log(nombres);
-
-const numeros = [1, 2, 3, 4, 5];
-numeros.forEach((num) => console.log(num * 2)); /* recorrer un array y ejecutar una funcion por cada elemento */
+main();
