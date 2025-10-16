@@ -5,10 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <!--  links -->
     <link rel="stylesheet" href="./css/styles.css">
-    <title>Document</title>
+    <title>Gestor de Inventario</title>
 </head>
 <body>
-    
+    <h1>Gestor de Inventario</h1>
+
+    <!-- Formulario -->
+     <form id="productForm">
+        <div>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required>
+        </div>
+
+        <div>
+            <label for="precioLista">Precio de lista (sin IVA):</label>
+            <input type="number" id="precioLista" step="0.01" min="0" required>
+        </div>
+
+        <div>
+            <label for="cantidad">Cantidad: </label>
+            <input type="number" id="cantidad" min="0" step="1" required>
+        </div>
+
+        <button type="submit">Agregar Producto</button>
+     </form>
+
+     <div id="productsContainer"></div>
     <script src="./js/app.js"></script>
 </body>
 </html>
