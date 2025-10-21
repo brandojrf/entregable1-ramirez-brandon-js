@@ -1,95 +1,100 @@
-const iva = 0.21;
-let productos = [];
-let contadorProductos = 0;
+const form = document.getElementById('productForm');
+const container = document.getElementById('productsContainer');
 
-alert("Bienvenido al gestor de inventario");
+const IVA = 0.21;
+let productId = 1;
+let products = [];
 
-function mostrarOpciones() {
-  return prompt("Elije una opción:\n1- Agregar producto\n2- Ver listado de productos\n3- Salir");
+// Cargar productos guardados
+const saved = localStorage.getItem('inventario');
+if (saved) {
+  products = JSON.parse(saved);
+  if (products.length > 0) {
+    productId = products[products.length - 1].id + 1;
+    products.forEach(p => renderProduct(p));
+    mostrarTotalInventario();
+  }
 }
 
-function agregarProducto() {
-  const nombre = prompt("Ingresa el nombre del producto");
-  if (!nombre || nombre.trim() === "" || !isNaN(nombre)) {
-    alert("Nombre inválido.");
-    console.log("Nombre inválido.");
+// Agregar producto
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const nombre = document.getElementById("nombre").value.trim();
+  const precioLista = parseFloat(document.getElementById("precioLista").value);
+  const cantidad = parseInt(document.getElementById("cantidad").value, 10);
+
+  if (!nombre || isNaN(precioLista) || isNaN(cantidad) || precioLista < 0 || cantidad <= 0) {
+    alert("Por favor ingresa datos válidos.");
     return;
   }
 
-  const precioEntrada = prompt("Ingresa el precio de lista (sin IVA).");
-  const precioLista = parseFloat(precioEntrada);
-  if (!Number.isFinite(precioLista) || precioLista < 0) {
-    alert("Precio inválido.");
-    console.log("Precio inválido.");
-    return;
-  }
+  const precioConIva = +(precioLista * (1 + IVA)).toFixed(2);
+  const subtotal = +(precioConIva * cantidad).toFixed(2);
 
-  const cantidadEntrada = prompt("Ingresa la cantidad");
-  const cantidad = parseInt(cantidadEntrada, 10);
-  if (!Number.isFinite(cantidad) || cantidad < 0) {
-    alert("Cantidad inválida.");
-    console.log("Cantidad inválida.");
-    return;
-  }
-
-  contadorProductos++;
   const producto = {
-    id: contadorProductos,
-    nombre: nombre.trim(),
-    precioLista: precioLista,
-    cantidad: cantidad
+    id: productId++,
+    nombre,
+    precioLista,
+    precioConIva,
+    cantidad,
+    subtotal
   };
-  productos.push(producto);
 
-  alert("Producto agregado exitosamente.");
-  console.log("Producto agregado exitosamente:", producto);
+  products.push(producto);
+  localStorage.setItem('inventario', JSON.stringify(products));
+
+  renderProduct(producto);
+  mostrarTotalInventario(); // se actualiza el total
+  form.reset();
+});
+
+// Renderizar un producto
+function renderProduct(producto) {
+  const productDiv = document.createElement('div');
+  productDiv.dataset.id = producto.id;
+
+  productDiv.innerHTML = `
+    <div>
+      <p><strong>${producto.nombre}</strong></p>
+      <p>Precio lista: $${producto.precioLista}</p>
+      <p>Precio c/IVA: $${producto.precioConIva}</p>
+      <p>Cantidad: ${producto.cantidad}</p>
+      <p><strong>Subtotal: $${producto.subtotal}</strong></p>
+      <button>Eliminar</button>
+    </div>
+  `;
+
+  productDiv.querySelector("button").addEventListener("click", () => {
+    deleteProduct(producto.id);
+  });
+
+  container.appendChild(productDiv);
 }
 
-function mostrarProductos() {
-  if (productos.length === 0) {
-    alert("No hay productos en el inventario.");
-    console.log("No hay productos en el inventario.");
-    return;
-  }
+// Eliminar producto
+function deleteProduct(id) {
+  products = products.filter(p => p.id !== id);
+  localStorage.setItem('inventario', JSON.stringify(products));
 
-  let total = 0;
-  let listado = "Listado de productos:\n";
-  for (let i = 0; i < productos.length; i++) {
-    const p = productos[i];
-    const precioConIva = p.precioLista * (1 + iva);
-    const subtotal = precioConIva * p.cantidad;
-    total += subtotal;
+  const productDiv = container.querySelector(`[data-id='${id}']`);
+  if (productDiv) productDiv.remove();
 
-    listado += `${p.id}. ${p.nombre}\n` + `Precio de lista: $${p.precioLista.toFixed(2)}\n` +
-               `Precio con IVA: $${precioConIva.toFixed(2)}\n` + `Cantidad: ${p.cantidad}\n ` +
-               `Subtotal: $${subtotal.toFixed(2)}\n\n`;
-  }
-  listado += `Total (con IVA): $${total.toFixed(2)}`;
-  alert(listado);
-  console.log(listado);
+  mostrarTotalInventario(); //  actualiza el total después de eliminar
 }
 
-function main() {
-  let opcion = mostrarOpciones();
+function mostrarTotalInventario() {
+  // Eliminar total previo (si existe)
+  let totalDiv = document.getElementById('totalInventario');
+  if (totalDiv) totalDiv.remove();
 
-  while (opcion !== null && opcion !== "3") {
-    switch (opcion) {
-      case "1":
-        agregarProducto();
-        break;
-      case "2":
-        mostrarProductos();
-        break;
-      default:
-        alert("Opción inválida. Por favor, elige 1, 2 o 3.");
-        console.log("Opción inválida. Por favor, elige 1, 2 o 3.");
-    }
-    // volver a preguntar dentro del while
-    opcion = mostrarOpciones();
-  }
+  // Calcular total general
+  const total = products.reduce((acc, p) => acc + p.subtotal, 0);
 
-  alert("Gracias por usar el gestor de inventario. ¡Hasta luego!");
-  console.log("Gracias por usar el gestor de inventario. ¡Hasta luego!");
+  // Crear y agregar elemento al HTML
+  totalDiv = document.createElement('div');
+  totalDiv.id = 'totalInventario';
+  totalDiv.innerHTML = `<h3>Total del inventario (con IVA): $${total.toFixed(2)}</h3>`;
+
+  container.appendChild(totalDiv);
 }
-
-main();
