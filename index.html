@@ -1,24 +1,29 @@
 <!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/styles.css" />
-    <title>Gestor de Inventario</title>
-  </head>
-  <body>
-    <h1>Gestor de Inventario</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <title>Document</title>
+</head>
+<body>
+  <h1>Gestor de Inventario</h1>
 
-    <!-- Renderización de productos -->
-    <div id="output"></div>
+  <div id="estado" aria-live="polite" style="text-align:center; margin: .75rem 0;"></div>
 
-    <h2>Inventario</h2>
-    <div id="inventario"></div>
+  <div id="output"></div>
 
-    <!-- Total del inventario (con IVA) -->
-    <div id="totalInventario"><h3>Total del inventario (con IVA): $0,00</h3></div>
+  <h2>Inventario</h2>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="./js/app.js" type="module"></script>
-  </body>
-</html>
+  <div style="max-width:1200px;margin:0 auto 0;padding:0 1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+    <button id="btnCerrar" type="button">Cerrar gestor de inventario</button>
+    <button id="btnVaciar" type="button">Vaciar inventario</button>
+  </div>
+
+  <div id="inventario"></div>
+
+  <div id="totalInventario"><h3>Total del inventario (con IVA): $0,00</h3></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="./js/app.js" type="module"></script>
+</body>
